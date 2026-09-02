@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Library</title>
+
+  <!-- The whole stylesheet lives in one separate file, loaded here. -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <h1>My Library</h1>
+    <p class="tagline">A personal reading tracker.</p>
+
+    <!-- These links jump to the matching id="" further down the page. -->
+    <nav class="jump-nav">
+      <a href="#want-to-read">Want to Read</a>
+      <a href="#reading">Reading</a>
+      <a href="#finished">Finished</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ============ SECTION 1: WANT TO READ ============ -->
+    <section class="shelf" id="want-to-read">
+      <h2 class="shelf__heading">Want to Read <span class="count">2</span></h2>
+
+      <ul class="book-list">
+
+        <li>
+          <article class="book">
+            <img class="book__cover"
+                 src="covers/left-hand-of-darkness.svg"
+                 alt="Cover of The Left Hand of Darkness"
+                 width="300" height="450">
+
+            <div class="book__info">
+              <h3 class="book__title">The Left Hand of Darkness</h3>
+              <p class="book__author">Ursula K. Le Guin</p>
+              <p class="book__meta">
+                <span class="badge badge--want">Want to Read</span>
+              </p>
+              <p class="book__notes">Recommended by three different people now. Time to give in.</p>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="book">
+            <img class="book__cover"
+                 src="covers/thinking-in-systems.svg"
+                 alt="Cover of Thinking in Systems"
+                 width="300" height="450">
+
+            <div class="book__info">
+              <h3 class="book__title">Thinking in Systems</h3>
+              <p class="book__author">Donella H. Meadows</p>
+              <p class="book__meta">
+                <span class="badge badge--want">Want to Read</span>
+              </p>
+              <p class="book__notes">Short, apparently. Good for a slow week.</p>
+            </div>
+          </article>
+        </li>
+
+      </ul>
+    </section>
+
+    <!-- ============ SECTION 2: READING ============ -->
+    <section class="shelf" id="reading">
+      <h2 class="shelf__heading">Reading <span class="count">2</span></h2>
+
+      <ul class="book-list">
+
+        <li>
+          <article class="book">
+            <img class="book__cover"
+                 src="covers/eloquent-javascript.svg"
+                 alt="Cover of Eloquent JavaScript"
+                 width="300" height="450">
+
+            <div class="book__info">
+              <h3 class="book__title">Eloquent JavaScript</h3>
+              <p class="book__author">Marijn Haverbeke</p>
+              <p class="book__meta">
+                <span class="badge badge--reading">Reading</span>
+              </p>
+              <p class="book__notes">On chapter 5. The higher-order functions chapter is the one everybody warns you about.</p>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="book">
+            <img class="book__cover"
+                 src="covers/pragmatic-programmer.svg"
+                 alt="Cover of The Pragmatic Programmer"
+                 width="300" height="450">
+
+            <div class="book__info">
+              <h3 class="book__title">The Pragmatic Programmer</h3>
+              <p class="book__author">Andrew Hunt and David Thomas</p>
+              <p class="book__meta">
+                <span class="badge badge--reading">Reading</span>
+              </p>
+              <p class="book__notes">Reading a chapter at a time, out of order.</p>
+            </div>
+          </article>
+        </li>
+
+      </ul>
+    </section>
+
+    <!-- ============ SECTION 3: FINISHED ============ -->
+    <section class="shelf" id="finished">
+      <h2 class="shelf__heading">Finished <span class="count">2</span></h2>
+
+      <ul class="book-list">
+
+        <li>
+          <article class="book">
+            <img class="book__cover"
+                 src="covers/the-hobbit.svg"
+                 alt="Cover of The Hobbit"
+                 width="300" height="450">
+
+            <div class="book__info">
+              <h3 class="book__title">The Hobbit</h3>
+              <p class="book__author">J.R.R. Tolkien</p>
+              <p class="book__meta">
+                <span class="badge badge--finished">Finished</span>
+                <!-- The stars are decorative, so the real rating goes in aria-label
+                     for anyone using a screen reader. -->
+                <span class="rating" aria-label="Rated 5 out of 5">★★★★★</span>
+              </p>
+              <p class="book__notes">Reread of a childhood favourite. Still holds up completely.</p>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="book">
+            <img class="book__cover"
+                 src="covers/project-hail-mary.svg"
+                 alt="Cover of Project Hail Mary"
+                 width="300" height="450">
+
+            <div class="book__info">
+              <h3 class="book__title">Project Hail Mary</h3>
+              <p class="book__author">Andy Weir</p>
+              <p class="book__meta">
+                <span class="badge badge--finished">Finished</span>
+                <span class="rating" aria-label="Rated 4 out of 5">★★★★☆</span>
+              </p>
+              <p class="book__notes">Finished it in two sittings. The middle third drags a little.</p>
+            </div>
+          </article>
+        </li>
+
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Stage 1 of 5 &mdash; static HTML and CSS, no JavaScript yet.</p>
+  </footer>
+
+</body>
+</html>

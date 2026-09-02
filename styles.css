@@ -1,0 +1,214 @@
+/* ==========================================================================
+   My Library - stylesheet
+   Read top to bottom: variables, then reset, then page chrome, then books.
+   ========================================================================== */
+
+/* --- 1. Design tokens ----------------------------------------------------
+   Every colour and size the page uses is named once here. Change a value
+   in this block and it updates everywhere. */
+:root {
+  --paper:      #f7f5f0;   /* page background */
+  --card:       #ffffff;   /* book card background */
+  --ink:        #23201c;   /* main text */
+  --ink-soft:   #6d675f;   /* secondary text: authors, notes */
+  --line:       #e2ddd4;   /* borders and rules */
+
+  --want:       #7a5ea8;   /* one accent colour per status */
+  --reading:    #b06f2a;
+  --finished:   #3f7a52;
+
+  --gap:        1.5rem;    /* the one spacing value used between things */
+  --radius:     10px;
+  --measure:    62rem;     /* max page width, so lines stay readable */
+}
+
+/* --- 2. Small reset ------------------------------------------------------ */
+* {
+  box-sizing: border-box;   /* padding counts inside an element's width */
+}
+
+body {
+  margin: 0;
+  padding: var(--gap);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+/* --- 3. Page header ------------------------------------------------------ */
+.site-header {
+  max-width: var(--measure);
+  margin: 0 auto var(--gap);        /* auto left/right = centred */
+  padding-bottom: var(--gap);
+  border-bottom: 2px solid var(--line);
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3rem);  /* grows with the screen, within limits */
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  margin: 0.25rem 0 0;
+  color: var(--ink-soft);
+}
+
+.jump-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: var(--gap);
+}
+
+.jump-nav a {
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;             /* huge radius = pill shape */
+  background: var(--card);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.jump-nav a:hover,
+.jump-nav a:focus {
+  color: var(--ink);
+  border-color: var(--ink-soft);
+}
+
+/* --- 4. Shelves (the three status sections) ------------------------------ */
+main {
+  max-width: var(--measure);
+  margin: 0 auto;
+}
+
+.shelf {
+  margin-bottom: calc(var(--gap) * 2);
+  scroll-margin-top: 1rem;          /* stops the jump links landing too tight */
+}
+
+.shelf__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 var(--gap);
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.count {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--ink);
+  font-size: 0.85rem;
+  letter-spacing: 0;
+}
+
+/* --- 5. The list of books ------------------------------------------------ */
+.book-list {
+  list-style: none;                 /* drop the bullets, keep the <ul> meaning */
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap);
+}
+
+/* --- 6. One book card ----------------------------------------------------
+   Two columns: a fixed-width cover, then everything else. */
+.book {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: var(--gap);
+  padding: var(--gap);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.book__cover {
+  width: 100%;
+  height: auto;                     /* keeps the cover's own proportions */
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.18);
+}
+
+.book__info > * {
+  margin: 0 0 0.4rem;               /* even spacing for every line of info */
+}
+
+.book__info > *:last-child {
+  margin-bottom: 0;
+}
+
+.book__title {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.book__author {
+  color: var(--ink-soft);
+}
+
+.book__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.book__notes {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+/* --- 7. Status badge -----------------------------------------------------
+   .badge is the shared shape; .badge--want etc. only set the colour. */
+.badge {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fff;
+}
+
+.badge--want     { background: var(--want); }
+.badge--reading  { background: var(--reading); }
+.badge--finished { background: var(--finished); }
+
+.rating {
+  color: var(--reading);
+  letter-spacing: 0.1em;
+}
+
+/* --- 8. Footer ----------------------------------------------------------- */
+.site-footer {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding-top: var(--gap);
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+/* --- 9. Wider screens ----------------------------------------------------
+   Below this width the single-column layout above already works, so the
+   only change needed is more columns and a bigger cover. */
+@media (min-width: 46rem) {
+  .book-list {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .book {
+    grid-template-columns: 96px 1fr;
+  }
+}

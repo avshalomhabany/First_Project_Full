@@ -1,0 +1,18 @@
+# Windows / macOS junk files
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editor settings
+.vscode/
+.idea/
+
+# Node - arrives in stage 3, ignored ahead of time so it never gets committed
+node_modules/
+npm-debug.log*
+.env
+
+# SQLite - arrives in stage 4
+*.sqlite
+*.sqlite3
+*.db
