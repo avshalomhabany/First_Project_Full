@@ -5,14 +5,14 @@ A personal reading tracker, built in five stages while learning full-stack devel
 ## Stages
 
 - [x] **1. Static page** - hand-written HTML and CSS. No JavaScript.
-- [ ] 2. Browser JavaScript - books live in an array; JS builds the page and adds a form.
+- [x] **2. Browser JavaScript** - books live in a JS array; the page is rendered from it, with add and remove.
 - [ ] 3. Express server - Node serves the page and a small JSON API.
 - [ ] 4. SQLite - books persist in a real database instead of memory.
 - [ ] 5. Deploy - put it on the internet.
 
 ## Running it (stage 1)
 
-Open `index.html` in a browser. That is the whole build step - there isn't one yet.
+Open `index.html` in a browser. Still no build step.
 
 ## Files
 

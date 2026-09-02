@@ -212,3 +212,104 @@ main {
     grid-template-columns: 96px 1fr;
   }
 }
+
+/* --- 10. Add-a-book form -------------------------------------------------
+   Added in stage 2. Everything above this line is unchanged from stage 1. */
+.add-book {
+  max-width: var(--measure);
+  margin: 0 auto calc(var(--gap) * 2);
+  padding: var(--gap);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.add-book__heading {
+  margin: 0 0 var(--gap);
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+#add-book-form {
+  display: flex;
+  flex-wrap: wrap;          /* fields sit in a row, and wrap on narrow screens */
+  align-items: flex-end;    /* line the button up with the bottom of the inputs */
+  gap: var(--gap);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;   /* label stacked above its input */
+  gap: 0.3rem;
+  flex: 1 1 12rem;          /* grow, shrink, but never narrower than 12rem */
+}
+
+.field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+
+.field input,
+.field select {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;            /* form controls ignore the page font unless told */
+}
+
+.field input:focus,
+.field select:focus {
+  outline: 2px solid var(--want);
+  outline-offset: 1px;
+}
+
+.btn {
+  padding: 0.55rem 1.4rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--want);
+}
+
+/* --- 11. Remove button and empty shelves --------------------------------- */
+.book__remove {
+  margin-left: auto;        /* pushes it to the right end of the meta row */
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.book__remove:hover,
+.book__remove:focus {
+  border-color: #b03030;
+  background: #b03030;
+  color: #fff;
+}
+
+.empty {
+  padding: var(--gap);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  font-style: italic;
+}
