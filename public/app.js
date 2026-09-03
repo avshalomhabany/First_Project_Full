@@ -1,18 +1,17 @@
 /* ==========================================================================
-   My Library - application code
+   My Library - browser code
 
-   The whole app follows one rule:
-       change the `books` array, then call render().
-   Nothing else ever touches the page directly.
+   Stage 3b: the books now live on the server. This file asks for them,
+   draws them, and sends changes back.
+
+   The rule from stage 2 still holds:
+       change `books`, then call render().
+   The only difference is that the server decides what `books` contains.
    ========================================================================== */
 
-'use strict';   // makes the browser complain about sloppy mistakes instead of
-                // silently doing something surprising
+'use strict';
 
-/* --- 1. The three statuses ----------------------------------------------
-   `key` is what we store on a book and put in the HTML.
-   `label` is what a human reads. Keeping them separate means we can change
-   the wording later without touching any book data. */
+/* --- 1. The three statuses ----------------------------------------------- */
 const STATUSES = [
   { key: 'want',     label: 'Want to Read' },
   { key: 'reading',  label: 'Reading' },
@@ -25,80 +24,74 @@ function labelFor(statusKey) {
 }
 
 /* --- 2. The data ---------------------------------------------------------
-   These are the same six books that used to be typed out in index.html,
-   now expressed as plain objects. `let` (not `const`) because deleting a
-   book replaces the whole array with a filtered copy.
+   Empty to start with. The six books are no longer written here - they are
+   on the server, and loadBooks() below goes and gets them. */
+let books = [];
 
-   Every book needs a unique `id`. That is how the Remove button knows which
-   one to drop - titles could collide, positions shift when things are
-   removed, but an id is stable. */
-let books = [
-  {
-    id: 1,
-    title: 'The Left Hand of Darkness',
-    author: 'Ursula K. Le Guin',
-    status: 'want',
-    rating: null,
-    notes: 'Recommended by three different people now. Time to give in.',
-    cover: 'covers/left-hand-of-darkness.svg',
-  },
-  {
-    id: 2,
-    title: 'Thinking in Systems',
-    author: 'Donella H. Meadows',
-    status: 'want',
-    rating: null,
-    notes: 'Short, apparently. Good for a slow week.',
-    cover: 'covers/thinking-in-systems.svg',
-  },
-  {
-    id: 3,
-    title: 'Eloquent JavaScript',
-    author: 'Marijn Haverbeke',
-    status: 'reading',
-    rating: null,
-    notes: 'On chapter 5. The higher-order functions chapter is the one everybody warns you about.',
-    cover: 'covers/eloquent-javascript.svg',
-  },
-  {
-    id: 4,
-    title: 'The Pragmatic Programmer',
-    author: 'Andrew Hunt and David Thomas',
-    status: 'reading',
-    rating: null,
-    notes: 'Reading a chapter at a time, out of order.',
-    cover: 'covers/pragmatic-programmer.svg',
-  },
-  {
-    id: 5,
-    title: 'The Hobbit',
-    author: 'J.R.R. Tolkien',
-    status: 'finished',
-    rating: 5,
-    notes: 'Reread of a childhood favourite. Still holds up completely.',
-    cover: 'covers/the-hobbit.svg',
-  },
-  {
-    id: 6,
-    title: 'Project Hail Mary',
-    author: 'Andy Weir',
-    status: 'finished',
-    rating: 4,
-    notes: 'Finished it in two sittings. The middle third drags a little.',
-    cover: 'covers/project-hail-mary.svg',
-  },
-];
+/* --- 3. Showing an error -------------------------------------------------
+   The server can be stopped, or busy, or broken. When that happens the user
+   should see something rather than a page that silently does nothing. */
+const errorEl = document.querySelector('#error');
 
-// The id to hand to the next book added. Six seed books, so the next is 7.
-let nextId = 7;
+function showError(message) {
+  errorEl.textContent = message;
+  errorEl.hidden = false;
+}
 
-/* --- 3. Building one book card ------------------------------------------
-   Produces exactly the markup stage 1 had, but built element by element.
+function clearError() {
+  errorEl.hidden = true;
+}
 
-   Note textContent, never innerHTML. textContent treats whatever you give it
-   as plain text, so a book title containing angle brackets shows up as those
-   characters on screen instead of being run as markup. Building HTML by
-   pasting strings together is how that bug gets in. */
+/* --- 4. Talking to the server --------------------------------------------
+   fetch() sends an HTTP request. It does not answer immediately - the
+   request has to travel and the server has to reply - so it hands back a
+   promise: "an answer, later".
+
+   `await` means "wait here until that answer arrives, then carry on".
+   A function containing `await` must be marked `async`. That is the whole
+   deal: async marks the function, await marks the waiting.
+
+   Everything is wrapped in try/catch: if the server is unreachable, fetch
+   throws, and we show a message instead of failing silently. */
+async function loadBooks() {
+  try {
+    const response = await fetch('/api/books');      // ask
+    if (!response.ok) {
+      throw new Error('Server answered ' + response.status);
+    }
+    books = await response.json();                   // read the answer as data
+    clearError();
+    render();
+  } catch (problem) {
+    showError('Could not reach the server. Is it still running? (npm start)');
+    console.error(problem);
+  }
+}
+
+async function createBook(newBook) {
+  const response = await fetch('/api/books', {
+    method: 'POST',                                   // not a plain GET
+    headers: { 'Content-Type': 'application/json' },  // "what I am sending is JSON"
+    body: JSON.stringify(newBook),                    // object -> JSON text
+  });
+
+  if (!response.ok) {
+    const problem = await response.json();
+    throw new Error(problem.error || 'Could not add the book.');
+  }
+}
+
+async function deleteBook(id) {
+  const response = await fetch('/api/books/' + id, { method: 'DELETE' });
+
+  if (!response.ok) {
+    throw new Error('Could not delete that book.');
+  }
+}
+
+/* --- 5. Building one book card -------------------------------------------
+   Unchanged from stage 2. It works on a book object and does not care in the
+   slightest where that object came from. */
 function createBookCard(book) {
   const li = document.createElement('li');
 
@@ -107,7 +100,7 @@ function createBookCard(book) {
 
   const cover = document.createElement('img');
   cover.className = 'book__cover';
-  cover.src = book.cover || 'covers/placeholder.svg';  // || = "or this if empty"
+  cover.src = book.cover || 'covers/placeholder.svg';
   cover.alt = 'Cover of ' + book.title;
   cover.width = 300;
   cover.height = 450;
@@ -127,11 +120,10 @@ function createBookCard(book) {
   meta.className = 'book__meta';
 
   const badge = document.createElement('span');
-  badge.className = 'badge badge--' + book.status;   // e.g. "badge badge--reading"
+  badge.className = 'badge badge--' + book.status;
   badge.textContent = labelFor(book.status);
   meta.append(badge);
 
-  // Only finished books have a rating, so only draw stars when there is one.
   if (book.rating) {
     const rating = document.createElement('span');
     rating.className = 'rating';
@@ -142,9 +134,9 @@ function createBookCard(book) {
 
   const remove = document.createElement('button');
   remove.className = 'book__remove';
-  remove.type = 'button';          // without this, a button inside a form submits it
+  remove.type = 'button';
   remove.textContent = 'Remove';
-  remove.dataset.id = book.id;     // becomes data-id="5" in the HTML
+  remove.dataset.id = book.id;
   remove.setAttribute('aria-label', 'Remove ' + book.title);
   meta.append(remove);
 
@@ -162,79 +154,75 @@ function createBookCard(book) {
   return li;
 }
 
-/* --- 4. Drawing the whole page ------------------------------------------
-   Wipes all three shelves and rebuilds them from `books`. Redrawing
-   everything is wasteful in theory and completely fine in practice at this
-   size - and it means there is only ONE place that turns data into pixels. */
+/* --- 6. Drawing the whole page -------------------------------------------
+   Also unchanged from stage 2. */
 function render() {
   STATUSES.forEach(status => {
     const list = document.querySelector('.book-list[data-status="' + status.key + '"]');
     const countEl = list.closest('.shelf').querySelector('.count');
 
-    // filter() returns a NEW array of just the books that match.
     const shelfBooks = books.filter(book => book.status === status.key);
 
     countEl.textContent = shelfBooks.length;
-    list.replaceChildren();          // empty the list
+    list.replaceChildren();
 
     if (shelfBooks.length === 0) {
       const empty = document.createElement('li');
       empty.className = 'empty';
       empty.textContent = 'Nothing here yet.';
       list.append(empty);
-      return;                        // skips to the next status
+      return;
     }
 
     shelfBooks.forEach(book => list.append(createBookCard(book)));
   });
 }
 
-/* --- 5. Adding a book ---------------------------------------------------- */
+/* --- 7. Adding a book ----------------------------------------------------
+   Same form handler as stage 2, with one change: instead of pushing onto a
+   local array, it sends the book to the server and then reloads the list.
+
+   Reloading rather than guessing means the page always shows what the server
+   actually has - including the id it assigned. */
 const form = document.querySelector('#add-book-form');
 
-form.addEventListener('submit', event => {
-  // Without this line the browser reloads the page on submit - a leftover from
-  // how forms worked before JavaScript. It would wipe everything instantly.
+form.addEventListener('submit', async event => {
   event.preventDefault();
 
   const data = new FormData(form);
-  const title = data.get('title').trim();     // trim() drops stray spaces
+  const title = data.get('title').trim();
   const author = data.get('author').trim();
 
-  if (!title || !author) return;              // belt and braces; HTML already checks
+  if (!title || !author) return;
 
-  books.push({
-    id: nextId,
-    title: title,
-    author: author,
-    status: data.get('status'),
-    rating: null,
-    notes: '',
-    cover: '',                                // falls back to placeholder.svg
-  });
-  nextId = nextId + 1;
-
-  form.reset();                               // clear the boxes
-  render();                                   // redraw with the new book
-  document.querySelector('#title').focus();   // ready for the next one
+  try {
+    await createBook({ title: title, author: author, status: data.get('status') });
+    form.reset();
+    await loadBooks();                          // fetch the updated list, then render
+    document.querySelector('#title').focus();
+  } catch (problem) {
+    showError(problem.message);
+    console.error(problem);
+  }
 });
 
-/* --- 6. Removing a book --------------------------------------------------
-   One listener on <main> handles every Remove button, including buttons that
-   do not exist yet. This is called event delegation: a click on a button
-   bubbles up to <main>, and we ask which button it came from.
-
-   The naive alternative - attaching a listener to each button - breaks the
-   moment render() replaces those buttons with new ones. */
-document.querySelector('main').addEventListener('click', event => {
+/* --- 8. Removing a book --------------------------------------------------
+   Same delegated listener as stage 2; the filtering now happens server-side. */
+document.querySelector('main').addEventListener('click', async event => {
   const button = event.target.closest('.book__remove');
-  if (!button) return;                        // clicked something else; ignore
+  if (!button) return;
 
-  const id = Number(button.dataset.id);       // data attributes are text, so convert
-  books = books.filter(book => book.id !== id);
-  render();
+  try {
+    await deleteBook(Number(button.dataset.id));
+    await loadBooks();
+  } catch (problem) {
+    showError(problem.message);
+    console.error(problem);
+  }
 });
 
-/* --- 7. Go ---------------------------------------------------------------
-   The page ships with empty shelves; this first call fills them. */
-render();
+/* --- 9. Go ---------------------------------------------------------------
+   Stage 2 called render() here, because the data was already present.
+   Now there is nothing to draw until the server answers, so we load first -
+   and loadBooks() calls render() when the books arrive. */
+loadBooks();

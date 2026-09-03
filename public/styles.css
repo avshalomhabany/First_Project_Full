@@ -313,3 +313,16 @@ main {
   color: var(--ink-soft);
   font-style: italic;
 }
+
+/* --- 12. Error banner ----------------------------------------------------
+   Added in stage 3b. Hidden by default via the `hidden` attribute in the
+   HTML; app.js clears that attribute when something goes wrong. */
+.error {
+  max-width: var(--measure);
+  margin: 0 auto var(--gap);
+  padding: 0.75rem var(--gap);
+  border: 1px solid #b03030;
+  border-radius: var(--radius);
+  background: #fdeaea;
+  color: #7d1f1f;
+}
