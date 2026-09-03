@@ -53,23 +53,46 @@ function clearError() {
 
    Everything is wrapped in try/catch: if the server is unreachable, fetch
    throws, and we show a message instead of failing silently. */
+const OFFLINE_MESSAGE = 'Could not reach the server. Is it still running? (npm start)';
+
+/* There are two completely different ways a request can go wrong, and they
+   need different messages:
+
+     1. The request never happened   - server stopped, no network.
+        fetch() THROWS. The browser's own message is the unhelpful
+        "Failed to fetch", so we swap in something a person can act on.
+
+     2. The request arrived and the server said no - 400, 404, 500.
+        fetch() does NOT throw; it returns a response with ok === false.
+        Those messages are worth showing, because the server wrote them.
+
+   This helper handles case 1 in one place, so every call below gets it. */
+async function request(url, options) {
+  try {
+    return await fetch(url, options);
+  } catch (networkProblem) {
+    console.error(networkProblem);
+    throw new Error(OFFLINE_MESSAGE);
+  }
+}
+
 async function loadBooks() {
   try {
-    const response = await fetch('/api/books');      // ask
+    const response = await request('/api/books');     // ask
     if (!response.ok) {
       throw new Error('Server answered ' + response.status);
     }
-    books = await response.json();                   // read the answer as data
+    books = await response.json();                    // read the answer as data
     clearError();
     render();
   } catch (problem) {
-    showError('Could not reach the server. Is it still running? (npm start)');
+    showError(problem.message);
     console.error(problem);
   }
 }
 
 async function createBook(newBook) {
-  const response = await fetch('/api/books', {
+  const response = await request('/api/books', {
     method: 'POST',                                   // not a plain GET
     headers: { 'Content-Type': 'application/json' },  // "what I am sending is JSON"
     body: JSON.stringify(newBook),                    // object -> JSON text
@@ -82,7 +105,7 @@ async function createBook(newBook) {
 }
 
 async function deleteBook(id) {
-  const response = await fetch('/api/books/' + id, { method: 'DELETE' });
+  const response = await request('/api/books/' + id, { method: 'DELETE' });
 
   if (!response.ok) {
     throw new Error('Could not delete that book.');
