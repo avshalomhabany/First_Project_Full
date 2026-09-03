@@ -1,0 +1,16 @@
+# Render deployment config.
+#
+# Render can read this file instead of you filling in the dashboard by hand,
+# and it keeps the settings in git where you can see them.
+services:
+  - type: web
+    name: my-library
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      # node:sqlite needs Node 22.5 or newer, so pin it rather than take
+      # whatever default the host happens to have.
+      - key: NODE_VERSION
+        value: 24.19.0

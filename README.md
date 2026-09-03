@@ -8,7 +8,7 @@ A personal reading tracker, built in five stages while learning full-stack devel
 - [x] **2. Browser JavaScript** - books live in a JS array; the page is rendered from it, with add and remove.
 - [x] **3. Express server** - Node serves the page and a JSON API; the books live server-side.
 - [x] **4. SQLite** - books persist in library.db and survive a restart.
-- [ ] 5. Deploy - put it on the internet.
+- [x] **5. Deploy** - runs on Render, deployed from this repo on every push.
 
 ## Running it
 
@@ -25,3 +25,23 @@ Run `npm install` once, then `npm start`, and open http://localhost:3000
 | `public/styles.css` | All styling |
 | `public/app.js` | Browser code: fetches books and draws them |
 | `public/covers/` | Placeholder cover art (SVG) |
+
+## Deploying
+
+Hosted on Render's free tier, built from this repo. Pushing to `main`
+triggers a redeploy automatically.
+
+Two things make the app portable:
+
+- `process.env.PORT` - the host chooses the port, not the code
+- `NODE_VERSION` in `render.yaml` - `node:sqlite` needs Node 22.5+
+
+### Known limitation
+
+The free tier gives the app a temporary filesystem, and `library.db` is not
+in git. So the database is rebuilt from the seed books whenever the service
+restarts, redeploys, or wakes from sleep. The service also sleeps after
+about 15 minutes of inactivity, making the next visit slow to load.
+
+Fixing it properly means either a paid persistent disk or moving to a
+managed Postgres.

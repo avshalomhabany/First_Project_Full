@@ -20,7 +20,17 @@ const path = require('path');
 const { listBooks, addBook, removeBook, DB_FILE } = require('./db');
 
 const app = express();
-const PORT = 3000;
+
+/* --- The port ------------------------------------------------------------
+   On your machine there is no PORT set, so this falls back to 3000 and
+   nothing changes.
+
+   A host like Render picks the port itself and passes it in as an
+   environment variable - a setting handed to the program from outside,
+   rather than written in the code. Hard-coding 3000 here would mean the
+   host looks for your app on a port it is not using, decides it is broken,
+   and kills it. This one line is the difference between deploying and not. */
+const PORT = process.env.PORT || 3000;
 
 const STATUS_KEYS = ['want', 'reading', 'finished'];
 

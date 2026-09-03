@@ -18,7 +18,7 @@ const path = require('path');
 /* --- 1. Open the database -----------------------------------------------
    The whole database is this one file. If it does not exist yet, opening it
    creates it. Delete the file and you get a clean slate. */
-const DB_FILE = path.join(__dirname, 'library.db');
+const DB_FILE = process.env.DATABASE_FILE || path.join(__dirname, 'library.db');
 const db = new DatabaseSync(DB_FILE);
 
 /* --- 2. The schema -------------------------------------------------------
